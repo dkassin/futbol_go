@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"futbol_go/lib/game_stats"
+)
 
 func main() {
-	fmt.Println("Hello, world!")
+	game_stats.CsvImport()
 }
