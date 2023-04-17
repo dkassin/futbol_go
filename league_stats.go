@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kniren/gota/dataframe"
+	"github.com/go-gota/gota/dataframe"
 )
 
 func LoadGameTeamsData() dataframe.DataFrame {
@@ -33,4 +33,9 @@ func LoadTeamsData() dataframe.DataFrame {
 
 func PrintData(df dataframe.DataFrame) {
 	fmt.Println(df)
+}
+
+func main() {
+	df1 := LoadGameTeamsData
+	fmt.Println(df1)
 }

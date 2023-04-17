@@ -1,8 +1,10 @@
 package league_stats_test
 
 import (
-	"futbol_go/lib/league_stats"
+	"futbol_go/league_stats"
 	"testing"
+
+	"github.com/go-gota/gota/dataframe"
 )
 
 func TestLoadGameTeamsData(t *testing.T) {

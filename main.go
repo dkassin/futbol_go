@@ -1,9 +1,10 @@
 package main
 
 import (
-	"futbol_go/lib/game_stats"
+	"github.com/dkassin/futbol_go/league_stats"
 )
 
 func main() {
-	game_stats.CsvImport()
+	df1_test := league_stats.LoadGameTeamsData()
+	league_stats.PrintData(df1_test)
 }
