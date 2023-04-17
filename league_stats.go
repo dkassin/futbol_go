@@ -1,4 +1,4 @@
-package league_stats
+package main
 
 import (
 	"fmt"
