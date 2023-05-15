@@ -1,4 +1,4 @@
-package main
+package lib
 
 import (
 	"fmt"
@@ -7,16 +7,16 @@ import (
 	"github.com/go-gota/gota/dataframe"
 )
 
-func LoadGameTeamsData() dataframe.DataFrame {
-	file, err := os.Open("./data/games_teams.csv")
+func LoadGameTeamsData() (dataframe.DataFrame, error) {
+	file, err := os.Open("./data/game_teams.csv")
 	if err != nil {
-		panic(err)
+		return dataframe.DataFrame{}, err
 	}
 	defer file.Close()
 
 	games_teamsDF := dataframe.ReadCSV(file)
 
-	return games_teamsDF
+	return games_teamsDF, nil
 }
 
 func LoadTeamsData() dataframe.DataFrame {
@@ -33,9 +33,5 @@ func LoadTeamsData() dataframe.DataFrame {
 
 func PrintData(df dataframe.DataFrame) {
 	fmt.Println(df)
-}
-
-func main() {
-	df1 := LoadGameTeamsData
-	fmt.Println(df1)
+	fmt.Sprintf("%T", df)
 }

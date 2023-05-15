@@ -1,4 +1,4 @@
-package game_stats
+package lib
 
 import (
 	"encoding/csv"
