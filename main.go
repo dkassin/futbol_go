@@ -2,15 +2,20 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/dkassin/futbol_go/lib"
 )
 
 func main() {
-	df1_test, err := lib.LoadGameTeamsData()
+	gamesData, err := lib.LoadGamesData()
 	if err != nil {
-		fmt.Println("Error loading game teams data:", err)
-		return
+		panic(err)
 	}
 
-	lib.PrintData(df1_test)
+	highestTotalScore := lib.CalculateHighestTotalScore(gamesData)
+	lowestTotalScore := lib.CalculateLowestTotalScore(gamesData)
+	percentageHomewins := lib.CalculatePercentageHomeWins(gamesData)
+	fmt.Println("highest Total Score:", highestTotalScore)
+	fmt.Println("lowest Total Score:", lowestTotalScore)
+	fmt.Println("Percentage Home Wins:", percentageHomewins)
 }
