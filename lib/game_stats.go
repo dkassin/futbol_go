@@ -2,59 +2,102 @@ package lib
 
 import (
 	"encoding/csv"
-	"fmt"
 	"math"
 	"os"
 	"strconv"
 )
 
-type GamesData struct {
+type GamesDataRaw struct {
 	Data [][]string
+	Headers map[string]int
 }
 
-func LoadGamesData() (GamesData, error) {
+type GamesData struct {
+	Date		string
+	HomeTeamId	int
+	AwayTeamId	int
+	HomeGoals	int
+	AwayGoals	int
+	GameId		int
+	Season		string
+	Type		string
+	Venue		string
+}
+
+func LoadGamesData() (GamesDataRaw, error) {
 	file, err := os.Open("./data/games.csv")
 	if err != nil {
-		return GamesData{}, err
+		return GamesDataRaw{}, err
 	}
 	defer file.Close()
 
 	reader := csv.NewReader(file)
 	data, err := reader.ReadAll()
 	if err != nil {
-		return GamesData{}, err
+		return GamesDataRaw{}, err
 	}
 
-	return GamesData{Data: data}, nil
+	headers := make(map[string]int)
+	if len(data) > 1 {
+		for i, header := range  data[0] {
+			headers[header] = i
+		}
+	}
+
+	return GamesDataRaw{
+		Data: data,
+		Headers: headers,
+		}, nil
 }
 
-func CalculateHighestTotalScore(gamesData GamesData) int {
+func StructureGamesData(gamesDataRaw GamesDataRaw) []GamesData {
+	var gamesData []GamesData
 
-	highestScore := 0
+	dateTimeIndex := gamesDataRaw.Headers["date_time"]
+	homeTeamIdIndex := gamesDataRaw.Headers["home_team_id"]
+	awayTeamIdIndex := gamesDataRaw.Headers["away_team_id"]
+	homeGoalsIndex := gamesDataRaw.Headers["home_goals"]
+	awayGoalsIndex := gamesDataRaw.Headers["away_goals"]
+	gameIdIndex := gamesDataRaw.Headers["game_id"]
+	seasonIndex := gamesDataRaw.Headers["season"]
+	typeIndex := gamesDataRaw.Headers["type"]
+	venueIndex := gamesDataRaw.Headers["venue"]
 
-	homeGoalsIndex := 6
-	awayGoalsIndex := 7
-
-	for i, row := range gamesData.Data {
-
+	for i, row := range gamesDataRaw.Data {
 		if i == 0 {
 			continue
 		}
 
-		homeGoalsStr := row[homeGoalsIndex]
-		awayGoalsStr := row[awayGoalsIndex]
+		homeTeamId, _ := strconv.Atoi(row[homeTeamIdIndex])
+		awayTeamId, _ := strconv.Atoi(row[awayTeamIdIndex])
+		homeGoals, _ := strconv.Atoi(row[homeGoalsIndex])
+		awayGoals, _ := strconv.Atoi(row[awayGoalsIndex])
+		gameId, _ := strconv.Atoi(row[gameIdIndex])
+	
 
-		homeGoals, err := strconv.Atoi(homeGoalsStr)
-		if err != nil {
-			fmt.Printf("Conversion error: %v\n", err)
+		gameData := GamesData{
+			Date:		row[dateTimeIndex],
+			HomeTeamId:	homeTeamId,
+			AwayTeamId:	awayTeamId,
+			HomeGoals:	homeGoals,
+			AwayGoals:	awayGoals,
+			GameId:		gameId,
+			Season:		row[seasonIndex],
+			Type:		row[typeIndex],
+			Venue:		row[venueIndex],
 		}
 
-		awayGoals, err := strconv.Atoi(awayGoalsStr)
-		if err != nil {
-			fmt.Printf("Conversion error: %v\n", err)
-		}
+		gamesData = append(gamesData, gameData)
+	}	
 
-		totalScore := homeGoals + awayGoals
+	return gamesData
+}
+
+func CalculateHighestTotalScore(gamesData []GamesData) int {
+	highestScore := 0
+
+	for _, gameData := range gamesData {
+		totalScore := gameData.HomeGoals + gameData.AwayGoals
 
 		if totalScore > highestScore {
 			highestScore = totalScore
@@ -63,33 +106,11 @@ func CalculateHighestTotalScore(gamesData GamesData) int {
 	return highestScore
 }
 
-func CalculateLowestTotalScore(gamesData GamesData) int {
+func CalculateLowestTotalScore(gamesData []GamesData) int {
 	lowestScore := 0
 
-	homeGoalsIndex := 6
-	awayGoalsIndex := 7
-
-	for i, row := range gamesData.Data {
-
-		if i == 0 {
-			continue
-		}
-
-		homeGoalsStr := row[homeGoalsIndex]
-		awayGoalsStr := row[awayGoalsIndex]
-
-		homeGoals, err := strconv.Atoi(homeGoalsStr)
-		if err != nil {
-			fmt.Printf("Conversion error: %v\n", err)
-		}
-
-		awayGoals, err := strconv.Atoi(awayGoalsStr)
-		if err != nil {
-			fmt.Printf("Conversion error: %v\n", err)
-		}
-
-		totalScore := homeGoals + awayGoals
-
+	for _, gameData := range gamesData {
+		totalScore := gameData.HomeGoals + gameData.AwayGoals
 		if totalScore < lowestScore {
 			lowestScore = totalScore
 		}
@@ -97,32 +118,12 @@ func CalculateLowestTotalScore(gamesData GamesData) int {
 	return lowestScore
 }
 
-func CalculatePercentageHomeWins(gamesData GamesData) float64 {
+func CalculatePercentageHomeWins(gamesData []GamesData) float64 {
 	homeWins := 0
 	totalGames := 0
 
-	homeGoalsIndex := 6
-	awayGoalsIndex := 7
-
-	for i, row := range gamesData.Data {
-		if i == 0 {
-			continue
-		}
-
-		homeGoalsStr := row[homeGoalsIndex]
-		awayGoalsStr := row[awayGoalsIndex]
-
-		homeGoals, err := strconv.Atoi(homeGoalsStr)
-		if err != nil {
-			fmt.Printf("Conversion error: %v\n", err)
-		}
-
-		awayGoals, err := strconv.Atoi(awayGoalsStr)
-		if err != nil {
-			fmt.Printf("Conversion error: %v\n", err)
-		}
-
-		if homeGoals > awayGoals {
+	for _, gameData := range gamesData {
+		if gameData.HomeGoals > gameData.AwayGoals {
 			homeWins++
 			totalGames++
 		} else {

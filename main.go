@@ -7,14 +7,15 @@ import (
 )
 
 func main() {
-	gamesData, err := lib.LoadGamesData()
+	gamesDataRaw, err := lib.LoadGamesData()
 	if err != nil {
 		panic(err)
 	}
 
-	highestTotalScore := lib.CalculateHighestTotalScore(gamesData)
-	lowestTotalScore := lib.CalculateLowestTotalScore(gamesData)
-	percentageHomewins := lib.CalculatePercentageHomeWins(gamesData)
+	structuredData := lib.StructureGamesData(gamesDataRaw)
+	highestTotalScore := lib.CalculateHighestTotalScore(structuredData)
+	lowestTotalScore := lib.CalculateLowestTotalScore(structuredData)
+	percentageHomewins := lib.CalculatePercentageHomeWins(structuredData)
 	fmt.Println("highest Total Score:", highestTotalScore)
 	fmt.Println("lowest Total Score:", lowestTotalScore)
 	fmt.Println("Percentage Home Wins:", percentageHomewins)
