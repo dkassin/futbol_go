@@ -134,3 +134,61 @@ func CalculatePercentageHomeWins(gamesData []GamesData) float64 {
 	roundedPercentage := math.Round(winPercentage*100) / 100
 	return roundedPercentage
 }
+
+func CalculatePercentageTies(gamesData []GamesData) float64 {
+	ties := 0
+	totalGames := 0
+
+	for _, gameData := range gamesData {
+		if gameData.HomeGoals == gameData.AwayGoals {
+			ties++
+			totalGames++
+		} else {
+			totalGames++
+		}
+	}
+	tiePercentage := float64(ties) / float64(totalGames)
+	roundedPercentage := math.Round(tiePercentage*100) / 100
+	return roundedPercentage
+}
+
+func CalculateCountGamesBySeason(gamesData []GamesData) map[string]int {
+	gameCountMap := make(map[string]int)
+
+	for _, gameData := range gamesData {
+		if _, exists := gameCountMap[gameData.Season]; exists {
+			gameCountMap[gameData.Season]++
+		} else {
+			gameCountMap[gameData.Season] = 1
+		}
+	}
+	return gameCountMap
+}
+
+func CalculateAverageGoalsPerGame(gamesData []GamesData) float64 {
+	totalGoals := 0
+	totalGames := 0
+
+	for _, gameData := range gamesData {
+		totalGoals += gameData.HomeGoals + gameData.AwayGoals
+		totalGames++
+	}
+	avgGoals := float64(totalGoals) / float64(totalGames)
+	roundedPercentage := math.Round(avgGoals*100) / 100
+	return roundedPercentage
+}
+
+func CalculateAverageGoalsBySeason(gamesData []GamesData, gameCountMap map[string]int) map[string]float64{
+	goalsBySeasonMap := make(map[string]float64)
+
+
+	for _, gameData := range gamesData {
+		goalsBySeasonMap[gameData.Season] += float64(gameData.HomeGoals + gameData.AwayGoals)
+	}
+
+	for year, goals := range goalsBySeasonMap {
+		avgGoalsPerYear := goals / float64(gameCountMap[year])
+		 goalsBySeasonMap[year] = math.Round(avgGoalsPerYear*100) / 100
+	}
+	return goalsBySeasonMap
+}
