@@ -1,37 +1,103 @@
 package lib
 
 import (
-	"fmt"
+	"encoding/csv"
+	"math"
 	"os"
-
-	"github.com/go-gota/gota/dataframe"
+	"strconv"
 )
 
-func LoadGameTeamsData() (dataframe.DataFrame, error) {
-	file, err := os.Open("./data/game_teams.csv")
+type GamesTeamsDataRaw struct {
+	Data [][]string
+	Headers map[string]int
+}
+
+type GameTeamsData struct {
+	GameId		string
+	TeamId		int
+	HomeAway	string
+	Result		string
+	SettledIn	string
+	HeadCoach	string
+	Goals		int
+	Shots		int
+	Tackles		int
+	Pim			int
+	PowerPOpps	int
+	FaceWin		float64
+	GiveAways	int
+	takeaways	int
+}
+
+type TeamsDataRaw struct {
+	Data [][]string
+	Headers map[string]int
+}
+
+type TeamsData struct {
+	TeamId		int
+	FranchiseId	int
+	TeamName	string
+	Abrev		string
+	Stadium		string
+	Link		string
+}
+
+
+
+func LoadGameTeamsData() (GameTeamsDataRaw, error) {
+	file, err := os.Open("./data/games_teams.csv")
 	if err != nil {
-		return dataframe.DataFrame{}, err
+		return GameTeamsDataRaw{}, err
 	}
 	defer file.Close()
 
-	games_teamsDF := dataframe.ReadCSV(file)
-
-	return games_teamsDF, nil
-}
-
-func LoadTeamsData() dataframe.DataFrame {
-	file2, err := os.Open("./data/teams.csv")
+	reader := csv.NewReader(file)
+	data, err := reader.ReadAll()
 	if err != nil {
-		panic(err)
+		return GameTeamsDataRaw{}, err
 	}
-	defer file2.Close()
 
-	teamsDF := dataframe.ReadCSV(file2)
+	headers := make(map[string]int)
+	if len(data) > 1 {
+		for i, header := range  data[0] {
+			headers[header] = i
+		}
+	}
 
-	return teamsDF
+	return GameTeamsDataRaw{
+		Data: data,
+		Headers: headers,
+		}, nil
 }
 
-func PrintData(df dataframe.DataFrame) {
-	fmt.Println(df)
-	fmt.Sprintf("%T", df)
+
+func LoadTeamsData() (TeamsDataRaw, error) {
+	file, err := os.Open("./data/teams.csv")
+	if err != nil {
+		return TeamsDataRaw{}, err
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	data, err := reader.ReadAll()
+	if err != nil {
+		return TeamsDataRaw{}, err
+	}
+
+	headers := make(map[string]int)
+	if len(data) > 1 {
+		for i, header := range  data[0] {
+			headers[header] = i
+		}
+	}
+
+	return TeamsDataRaw{
+		Data: data,
+		Headers: headers,
+		}, nil
+}
+
+func StructureGameTeamsData(gameTeamsDataRaw  GameTeamsDataRaw) []GameTeamsData {
+	var gameTeamsData []gameTeamsData
 }
