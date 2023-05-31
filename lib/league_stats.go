@@ -2,19 +2,19 @@ package lib
 
 import (
 	"encoding/csv"
-	"math"
+	// "math"
 	"os"
 	"strconv"
 )
 
-type GamesTeamsDataRaw struct {
+type GameTeamsDataRaw struct {
 	Data [][]string
 	Headers map[string]int
 }
 
 type GameTeamsData struct {
 	GameId		string
-	TeamId		int
+	TeamId		string
 	HomeAway	string
 	Result		string
 	SettledIn	string
@@ -24,6 +24,7 @@ type GameTeamsData struct {
 	Tackles		int
 	Pim			int
 	PowerPOpps	int
+	PowerPGoals int
 	FaceWin		float64
 	GiveAways	int
 	TakeAways	int
@@ -35,8 +36,8 @@ type TeamsDataRaw struct {
 }
 
 type TeamsData struct {
-	TeamId		int
-	FranchiseId	int
+	TeamId		string
+	FranchiseId	string
 	TeamName	string
 	Abrev		string
 	Stadium		string
@@ -46,7 +47,7 @@ type TeamsData struct {
 
 
 func LoadGameTeamsData() (GameTeamsDataRaw, error) {
-	file, err := os.Open("./data/games_teams.csv")
+	file, err := os.Open("./data/game_teams.csv")
 	if err != nil {
 		return GameTeamsDataRaw{}, err
 	}
@@ -99,7 +100,7 @@ func LoadTeamsData() (TeamsDataRaw, error) {
 }
 
 func StructureGameTeamsData(gameTeamsDataRaw  GameTeamsDataRaw) []GameTeamsData {
-	var gameTeamsData []gameTeamsData
+	var gameTeams []GameTeamsData
 
 	gameIdIndex := gameTeamsDataRaw.Headers["game_id"]
 	teamIdIndex := gameTeamsDataRaw.Headers["team_id"]
@@ -122,70 +123,102 @@ func StructureGameTeamsData(gameTeamsDataRaw  GameTeamsDataRaw) []GameTeamsData 
 			continue
 		}
 
-		teamId, _ := strconv.Atoi(row[teamIdIndex])
 		goals, _ := strconv.Atoi(row[goalsIndex])
 		shots, _ := strconv.Atoi(row[shotsIndex])
 		tackles, _ := strconv.Atoi(row[tacklesIndex])
 		pim, _ := strconv.Atoi(row[pimIndex])
 		powerPOpps, _ := strconv.Atoi(row[powerPlayOpportunitiesIndex])
+		powerPGoals, _ := strconv.Atoi(row[powerPlayGoalsIndex])
 		faceWin, _ := strconv.ParseFloat(row[faceOffWinPercentageIndex], 64)
 		giveAways, _ := strconv.Atoi(row[giveawaysIndex])
 		takeAways, _ := strconv.Atoi(row[takeawaysIndex])
 
-		gameTeamData := gameTeamsData {
-			GameId: 	row[gameIdIndex],
-			TeamId:		teamId,
-			HomeAway:	row[homeAwayIndex],
-			Result:		row[resultIndex],
-			SettledIn:	row[settledInIndex],
-			HeadCoach:	row[headCoachIndex],
-			Goals:		goals,
-			Shots:		shots,
-			Tackles:	tackles,
-			Pim:		pim,
-			powerPOpps	powerPOpps,
-			FaceWin,	faceWin,
-			GiveAways,	giveAways,
-			TakeAways	takeAways,
+		gameTeam := GameTeamsData {
+			GameId: 		row[gameIdIndex],
+			TeamId:			row[teamIdIndex],
+			HomeAway:		row[homeAwayIndex],
+			Result:			row[resultIndex],
+			SettledIn:		row[settledInIndex],
+			HeadCoach:		row[headCoachIndex],
+			Goals:			goals,
+			Shots:			shots,
+			Tackles:		tackles,
+			Pim:			pim,
+			PowerPOpps:		powerPOpps,
+			PowerPGoals: 	powerPGoals,
+			FaceWin:		faceWin,
+			GiveAways:		giveAways,
+			TakeAways:		takeAways,
 		}
 
-		gameTeamsData.append(gameTeamsData, gameTeamData)	
+		gameTeams = append(gameTeams, gameTeam)	
 	}
 
-	return gameTeamsData
+	return gameTeams
 
 }
 
 func StructureTeamsData(teamsDataRaw TeamsDataRaw) []TeamsData {
-	var teamsData []teamsData
+	var teams []TeamsData
 
-	teamIdIndex := TeamsDataRaw.Headers["team_id"]
-	franchiseIdIndex := TeamsDataRaw.Headers["franchiseId"]
-	teamName := TeamsDataRaw.Headers["teamName"]
-	abbrevIndex := TeamsDataRaw.Headers["abbreviation"]
-	stadiumIndex := TeamsDataRaw.Headers["Stadium"]
-	linkIndex := TeamsDataRaw.Headers["link"]
+	teamIdIndex := teamsDataRaw.Headers["team_id"]
+	franchiseIdIndex := teamsDataRaw.Headers["franchiseId"]
+	teamName := teamsDataRaw.Headers["teamName"]
+	abbrevIndex := teamsDataRaw.Headers["abbreviation"]
+	stadiumIndex := teamsDataRaw.Headers["Stadium"]
+	linkIndex := teamsDataRaw.Headers["link"]
 
 	for i, row := range teamsDataRaw.Data {
 		if i == 0 {
 			continue
 		}
-
-		teamId, _ := strconv.Atoi(row[teamIdIndex])
-		franchiseId, _ := strconv.Atoi(row[franchiseIdIndex])
 	
-
-		teamData := teamsData {
-			TeamId:			teamId,
-			FranchiseId:	franchiseId,
-			TeamName		row[teamName],
-			Abrev			row[abbrevIndex],
-			Stadium			row[stadiumIndex],
-			Link			row[linkIndex],
+		teamData := TeamsData {
+			TeamId:			row[teamIdIndex],
+			FranchiseId:	row[franchiseIdIndex],
+			TeamName:		row[teamName],
+			Abrev:			row[abbrevIndex],
+			Stadium:		row[stadiumIndex],
+			Link:			row[linkIndex],
 		}
 
-		teamsData.append(teamsData, teamData)
+		teams = append(teams, teamData)
 	}
 
-	return teamsData
+	return teams
+}
+
+func CalculateCountOfTeams(teams []TeamsData) int {
+	return len(teams)
+}
+
+func CalculateBestOffense(gameTeams []GameTeamsData) string {
+	goalsByTeamMap := make(map[string]int)
+	gamesByTeamMap := make(map[string]int)
+	var largestValueTeam 	string
+	var largestValue 		float64
+
+	for _, gameTeam := range gameTeams {
+		goalsByTeamMap[gameTeam.TeamId] += gameTeam.Goals	
+		gamesByTeamMap[gameTeam.TeamId]++ 
+	}
+
+	for team, games := range gamesByTeamMap {
+		avgGoals := float64(goalsByTeamMap[team]) / float64(games)
+		if largestValueTeam == "" || largestValue < avgGoals {
+			largestValue = avgGoals
+			largestValueTeam = team
+		} 			
+	}
+
+	return largestValueTeam
+}
+
+func ReturnTeamName(teams []TeamsData, largestValueTeam string) string {
+	for _, team := range teams {
+		if team.TeamId == largestValueTeam {
+			return team.TeamName
+		}
+	} 
+	return ""
 }

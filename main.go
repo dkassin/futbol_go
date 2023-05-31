@@ -11,15 +11,27 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	gameTeamsDataRaw, err := lib.LoadGameTeamsData()
+	if err != nil {
+		panic(err)
+	}
+	teamsDataRaw, err := lib.LoadTeamsData()
+	if err != nil {
+		panic(err)
+	}
 
-	structuredData := lib.StructureGamesData(gamesDataRaw)
-	highestTotalScore := lib.CalculateHighestTotalScore(structuredData)
-	lowestTotalScore := lib.CalculateLowestTotalScore(structuredData)
-	percentageHomewins := lib.CalculatePercentageHomeWins(structuredData)
-	percentageTies := lib.CalculatePercentageTies(structuredData)
-	gameCountMapBySeason := lib.CalculateCountGamesBySeason(structuredData)
-	avgGoalsPerGame := lib.CalculateAverageGoalsPerGame(structuredData)
-	avgGoalsPerSeason := lib.CalculateAverageGoalsBySeason(structuredData, gameCountMapBySeason)
+	structuredGamesData := lib.StructureGamesData(gamesDataRaw)
+	structuredGameTeamsData := lib.StructureGameTeamsData(gameTeamsDataRaw)
+	structuredTeamsData := lib.StructureTeamsData(teamsDataRaw)
+	highestTotalScore := lib.CalculateHighestTotalScore(structuredGamesData)
+	lowestTotalScore := lib.CalculateLowestTotalScore(structuredGamesData)
+	percentageHomewins := lib.CalculatePercentageHomeWins(structuredGamesData)
+	percentageTies := lib.CalculatePercentageTies(structuredGamesData)
+	gameCountMapBySeason := lib.CalculateCountGamesBySeason(structuredGamesData)
+	avgGoalsPerGame := lib.CalculateAverageGoalsPerGame(structuredGamesData)
+	avgGoalsPerSeason := lib.CalculateAverageGoalsBySeason(structuredGamesData, gameCountMapBySeason)
+	countOfTeams := lib.CalculateCountOfTeams(structuredTeamsData)
+	bestOffense := lib.ReturnTeamName(structuredTeamsData, lib.CalculateBestOffense(structuredGameTeamsData))
 	fmt.Println("highest Total Score:", highestTotalScore)
 	fmt.Println("lowest Total Score:", lowestTotalScore)
 	fmt.Println("Percentage Home Wins:", percentageHomewins)
@@ -27,4 +39,6 @@ func main() {
 	fmt.Println("Game Counts by Season:", gameCountMapBySeason)
 	fmt.Println("Avg Goals per Game:", avgGoalsPerGame)
 	fmt.Println("Avg Goals per each Season:", avgGoalsPerSeason)
+	fmt.Println("Count of Teams:", countOfTeams)
+	fmt.Println("Best Offense:", bestOffense)
 }
