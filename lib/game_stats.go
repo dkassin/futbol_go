@@ -18,7 +18,7 @@ type GamesData struct {
 	AwayTeamId	int
 	HomeGoals	int
 	AwayGoals	int
-	GameId		int
+	GameId		string
 	Season		string
 	Type		string
 	Venue		string
@@ -72,16 +72,14 @@ func StructureGamesData(gamesDataRaw GamesDataRaw) []GamesData {
 		awayTeamId, _ := strconv.Atoi(row[awayTeamIdIndex])
 		homeGoals, _ := strconv.Atoi(row[homeGoalsIndex])
 		awayGoals, _ := strconv.Atoi(row[awayGoalsIndex])
-		gameId, _ := strconv.Atoi(row[gameIdIndex])
 	
-
 		gameData := GamesData{
 			Date:		row[dateTimeIndex],
 			HomeTeamId:	homeTeamId,
 			AwayTeamId:	awayTeamId,
 			HomeGoals:	homeGoals,
 			AwayGoals:	awayGoals,
-			GameId:		gameId,
+			GameId:		row[gameIdIndex],
 			Season:		row[seasonIndex],
 			Type:		row[typeIndex],
 			Venue:		row[venueIndex],
