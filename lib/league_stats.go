@@ -192,6 +192,15 @@ func CalculateCountOfTeams(teams []TeamsData) int {
 	return len(teams)
 }
 
+func ReturnTeamName(teams []TeamsData, largestValueTeam string) string {
+	for _, team := range teams {
+		if team.TeamId == largestValueTeam {
+			return team.TeamName
+		}
+	} 
+	return ""
+}
+
 func CalculateBestOffense(gameTeams []GameTeamsData) string {
 	goalsByTeamMap := make(map[string]int)
 	gamesByTeamMap := make(map[string]int)
@@ -214,11 +223,129 @@ func CalculateBestOffense(gameTeams []GameTeamsData) string {
 	return largestValueTeam
 }
 
-func ReturnTeamName(teams []TeamsData, largestValueTeam string) string {
-	for _, team := range teams {
-		if team.TeamId == largestValueTeam {
-			return team.TeamName
+func CalculateWorstOffense(gameTeams []GameTeamsData) string {
+	goalsByTeamMap := make(map[string]int)
+	gamesByTeamMap := make(map[string]int)
+	var smallestValueTeam 	string
+	var smallestValue 		float64
+
+	for _, gameTeam := range gameTeams {
+		goalsByTeamMap[gameTeam.TeamId] += gameTeam.Goals	
+		gamesByTeamMap[gameTeam.TeamId]++ 
+	}
+
+	for team, games := range gamesByTeamMap {
+		avgGoals := float64(goalsByTeamMap[team]) / float64(games)
+		if smallestValueTeam == "" {
+			smallestValue = avgGoals
+			smallestValueTeam = team
+		} else if smallestValue > avgGoals  {
+			smallestValue = avgGoals
+			smallestValueTeam = team
+		}		
+	}
+
+	return smallestValueTeam
+}
+
+func CalculateHighestScoringVisitor(gameTeams []GameTeamsData) string {
+	goalsByTeamMap := make(map[string]int)
+	gamesByTeamMap := make(map[string]int)
+	var largestValueTeam 	string
+	var largestValue 		float64
+
+	for _, gameTeam := range gameTeams {
+		if gameTeam.HomeAway == "away" {
+			goalsByTeamMap[gameTeam.TeamId] += gameTeam.Goals	
+			gamesByTeamMap[gameTeam.TeamId]++ 
 		}
-	} 
-	return ""
+	}
+
+	for team, games := range gamesByTeamMap {
+		avgGoals := float64(goalsByTeamMap[team]) / float64(games)
+		if largestValueTeam == "" || largestValue < avgGoals {
+			largestValue = avgGoals
+			largestValueTeam = team
+		} 			
+	}
+
+	return largestValueTeam
+}
+
+func CalculateHighestScoringHome(gameTeams []GameTeamsData) string {
+	goalsByTeamMap := make(map[string]int)
+	gamesByTeamMap := make(map[string]int)
+	var largestValueTeam 	string
+	var largestValue 		float64
+
+	for _, gameTeam := range gameTeams {
+		if gameTeam.HomeAway == "home" {
+			goalsByTeamMap[gameTeam.TeamId] += gameTeam.Goals	
+			gamesByTeamMap[gameTeam.TeamId]++ 
+		}
+	}
+
+	for team, games := range gamesByTeamMap {
+		avgGoals := float64(goalsByTeamMap[team]) / float64(games)
+		if largestValueTeam == "" || largestValue < avgGoals {
+			largestValue = avgGoals
+			largestValueTeam = team
+		} 			
+	}
+
+	return largestValueTeam
+}
+
+func CalculateLowestScoringVisitor(gameTeams []GameTeamsData) string {
+	goalsByTeamMap := make(map[string]int)
+	gamesByTeamMap := make(map[string]int)
+	var smallestValueTeam 	string
+	var smallestValue 		float64
+
+	for _, gameTeam := range gameTeams {
+		if gameTeam.HomeAway == "away" {
+			goalsByTeamMap[gameTeam.TeamId] += gameTeam.Goals	
+			gamesByTeamMap[gameTeam.TeamId]++ 
+		}
+	}
+
+	for team, games := range gamesByTeamMap {
+		avgGoals := float64(goalsByTeamMap[team]) / float64(games)
+		if smallestValueTeam == "" {
+			smallestValue = avgGoals
+			smallestValueTeam = team
+		} else if smallestValue > avgGoals  {
+			smallestValue = avgGoals
+			smallestValueTeam = team
+		}		
+	}
+
+	return smallestValueTeam
+}
+
+func CalculateLowestScoringHome(gameTeams []GameTeamsData) string {
+	goalsByTeamMap := make(map[string]int)
+	gamesByTeamMap := make(map[string]int)
+	var smallestValueTeam 	string
+	var smallestValue 		float64
+
+	for _, gameTeam := range gameTeams {
+		if gameTeam.HomeAway == "home" {
+			goalsByTeamMap[gameTeam.TeamId] += gameTeam.Goals	
+			gamesByTeamMap[gameTeam.TeamId]++ 
+		}
+	}
+
+	for team, games := range gamesByTeamMap {
+		avgGoals := float64(goalsByTeamMap[team]) / float64(games)
+		if smallestValueTeam == "" {
+			smallestValue = avgGoals
+			smallestValueTeam = team
+		} else if smallestValue > avgGoals  {
+			smallestValue = avgGoals
+			smallestValueTeam = team
+		}		
+	}
+
+	return smallestValueTeam
 }
