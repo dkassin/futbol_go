@@ -1,11 +1,11 @@
 package lib
 
-func CalculateWinningestCoach(gameTeams []GameTeamsData, gamesData []GamesData, year string) string {
+func CalculateBestWorstCoach(gameTeams []GameTeamsData, gamesData []GamesData, year string) (string, string, string) {
 	winsByTeamMap := make(map[string]int)
 	gamesByheadcoachMap := make(map[string]int)
 	coachWinningPercentageMap := make(map[string]float64)
-	var largestValueCoach	string
-	var largestValue 		float64
+	var largestValueCoach, smallestValueCoach	string
+	var largestValue, smallestValue  		float64	
 
 	for _, game := range gamesData {
 		if game.Season == year && game.Type == "Regular Season" {
@@ -29,11 +29,20 @@ func CalculateWinningestCoach(gameTeams []GameTeamsData, gamesData []GamesData, 
 	}
 
 	for coach, percentage := range coachWinningPercentageMap {
-		if len(largestValueCoach) == 0 || percentage > largestValue {
+		if len(largestValueCoach) == 0 {
+			largestValue = percentage
+			smallestValue = percentage
+			largestValueCoach = coach
+			smallestValueCoach = coach
+		} else if percentage > largestValue {
 			largestValue = percentage
 			largestValueCoach = coach
+		} else if percentage < smallestValue {
+			smallestValue = percentage
+			smallestValueCoach = coach
 		}
 	}
-	
-	return largestValueCoach
+
+	return year, largestValueCoach, smallestValueCoach
 }
+

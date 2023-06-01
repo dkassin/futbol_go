@@ -37,7 +37,7 @@ func main() {
 	highestScoringHome := lib.ReturnTeamName(structuredTeamsData, lib.CalculateHighestScoringHome(structuredGameTeamsData))
 	lowestScoringVisitor := lib.ReturnTeamName(structuredTeamsData, lib.CalculateLowestScoringVisitor(structuredGameTeamsData))
 	lowestScoringHome := lib.ReturnTeamName(structuredTeamsData, lib.CalculateLowestScoringHome(structuredGameTeamsData))
-	winningestCoach := lib.CalculateWinningestCoach(structuredGameTeamsData, structuredGamesData, "20132014")
+	year, winningestCoach, worstCoach := lib.CalculateBestWorstCoach(structuredGameTeamsData, structuredGamesData, "20132014")
 	fmt.Println("highest Total Score:", highestTotalScore)
 	fmt.Println("lowest Total Score:", lowestTotalScore)
 	fmt.Println("Percentage Home Wins:", percentageHomewins)
@@ -52,5 +52,6 @@ func main() {
 	fmt.Println("Highest Scoring Home Team:", highestScoringHome)
 	fmt.Println("Lowest Scoring Visitor:", lowestScoringVisitor)
 	fmt.Println("Lowest Scoring Home Team:", lowestScoringHome)
-	fmt.Println("Winningest Coach:", winningestCoach)
+	fmt.Println(year,"Winningest Coach:", winningestCoach)
+	fmt.Println(year,"Worst Coach:", worstCoach)
 }
