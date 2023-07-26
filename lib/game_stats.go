@@ -8,20 +8,20 @@ import (
 )
 
 type GamesDataRaw struct {
-	Data [][]string
+	Data    [][]string
 	Headers map[string]int
 }
 
 type GamesData struct {
-	Date		string
-	HomeTeamId	int
-	AwayTeamId	int
-	HomeGoals	int
-	AwayGoals	int
-	GameId		string
-	Season		string
-	Type		string
-	Venue		string
+	Date       string
+	HomeTeamId int
+	AwayTeamId int
+	HomeGoals  int
+	AwayGoals  int
+	GameId     string
+	Season     string
+	Type       string
+	Venue      string
 }
 
 func LoadGamesData() (GamesDataRaw, error) {
@@ -39,15 +39,15 @@ func LoadGamesData() (GamesDataRaw, error) {
 
 	headers := make(map[string]int)
 	if len(data) > 1 {
-		for i, header := range  data[0] {
+		for i, header := range data[0] {
 			headers[header] = i
 		}
 	}
 
 	return GamesDataRaw{
-		Data: data,
+		Data:    data,
 		Headers: headers,
-		}, nil
+	}, nil
 }
 
 func StructureGamesData(gamesDataRaw GamesDataRaw) []GamesData {
@@ -72,21 +72,21 @@ func StructureGamesData(gamesDataRaw GamesDataRaw) []GamesData {
 		awayTeamId, _ := strconv.Atoi(row[awayTeamIdIndex])
 		homeGoals, _ := strconv.Atoi(row[homeGoalsIndex])
 		awayGoals, _ := strconv.Atoi(row[awayGoalsIndex])
-	
+
 		gameData := GamesData{
-			Date:		row[dateTimeIndex],
-			HomeTeamId:	homeTeamId,
-			AwayTeamId:	awayTeamId,
-			HomeGoals:	homeGoals,
-			AwayGoals:	awayGoals,
-			GameId:		row[gameIdIndex],
-			Season:		row[seasonIndex],
-			Type:		row[typeIndex],
-			Venue:		row[venueIndex],
+			Date:       row[dateTimeIndex],
+			HomeTeamId: homeTeamId,
+			AwayTeamId: awayTeamId,
+			HomeGoals:  homeGoals,
+			AwayGoals:  awayGoals,
+			GameId:     row[gameIdIndex],
+			Season:     row[seasonIndex],
+			Type:       row[typeIndex],
+			Venue:      row[venueIndex],
 		}
 
 		gamesData = append(gamesData, gameData)
-	}	
+	}
 
 	return gamesData
 }
@@ -176,9 +176,8 @@ func CalculateAverageGoalsPerGame(gamesData []GamesData) float64 {
 	return roundedPercentage
 }
 
-func CalculateAverageGoalsBySeason(gamesData []GamesData, gameCountMap map[string]int) map[string]float64{
+func CalculateAverageGoalsBySeason(gamesData []GamesData, gameCountMap map[string]int) map[string]float64 {
 	goalsBySeasonMap := make(map[string]float64)
-
 
 	for _, gameData := range gamesData {
 		goalsBySeasonMap[gameData.Season] += float64(gameData.HomeGoals + gameData.AwayGoals)
@@ -186,7 +185,7 @@ func CalculateAverageGoalsBySeason(gamesData []GamesData, gameCountMap map[strin
 
 	for year, goals := range goalsBySeasonMap {
 		avgGoalsPerYear := goals / float64(gameCountMap[year])
-		 goalsBySeasonMap[year] = math.Round(avgGoalsPerYear*100) / 100
+		goalsBySeasonMap[year] = math.Round(avgGoalsPerYear*100) / 100
 	}
 	return goalsBySeasonMap
 }
